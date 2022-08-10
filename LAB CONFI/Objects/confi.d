@@ -1,0 +1,10 @@
+.\objects\confi.o: CONFI.cpp
+.\objects\confi.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\confi.o: C:\Keil_v5\ARM\Inc\ST\STM32F4xx\STM32F4xx.h
+.\objects\confi.o: C:\Keil_v5\ARM\CMSIS\Include\core_cm4.h
+.\objects\confi.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\confi.o: C:\Keil_v5\ARM\CMSIS\Include\core_cmInstr.h
+.\objects\confi.o: C:\Keil_v5\ARM\CMSIS\Include\core_cmFunc.h
+.\objects\confi.o: C:\Keil_v5\ARM\CMSIS\Include\core_cm4_simd.h
+.\objects\confi.o: C:\Keil_v5\ARM\Inc\ST\STM32F4xx\system_stm32f4xx.h
+.\objects\confi.o: confi.h

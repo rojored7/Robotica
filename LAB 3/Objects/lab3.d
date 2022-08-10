@@ -1,0 +1,10 @@
+.\objects\lab3.o: LAB3.cpp
+.\objects\lab3.o: D:\ARM\Inc\ST\STM32F4xx\STM32f4xx.h
+.\objects\lab3.o: D:\ARM\CMSIS\Include\core_cm4.h
+.\objects\lab3.o: D:\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\lab3.o: D:\ARM\CMSIS\Include\core_cmInstr.h
+.\objects\lab3.o: D:\ARM\CMSIS\Include\core_cmFunc.h
+.\objects\lab3.o: D:\ARM\CMSIS\Include\core_cm4_simd.h
+.\objects\lab3.o: D:\ARM\Inc\ST\STM32F4xx\system_stm32f4xx.h
+.\objects\lab3.o: D:\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\lab3.o: pines.h

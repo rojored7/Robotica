@@ -1,0 +1,191 @@
+#include "STM32F4xx.h"
+#include <stdio.h>
+#include "pines.h"
+
+// Define los puertos donde va a salir 
+#define RS	(*((volatile unsigned long*) 0x42420284)) //PE1 RS
+#define E	(*((volatile unsigned long*)   0x42420280)) //PE0 Enable 
+#define Puerto GPIOC->ODR // Salida del bus de 8 bits contando desde pin 0 
+
+//Definicion de los comandos 
+#define CursorLinea1 0x80
+#define CursorLinea2 0xC0
+#define CursorLinea3 0x94
+#define CursorLinea4 0xD4
+// Conversor de numero a ACII que luego es el que muestra
+char tochar(int x){
+	char n;
+	switch(x){
+		case 0:
+			n='0';
+		break;
+		case 1:
+			n='1';
+		break;
+		case 2:
+			n='2';
+		break;
+		case 3:
+			n='3';
+		break;
+		case 4:
+			n='4';
+		break;
+		case 5:
+			n='5';
+		break;
+		case 6:
+			n='6';
+		break;
+		case 7:
+			n='7';
+		break;
+		case 8:
+			n='8';
+		break;
+		case 9:
+			n='9';
+		break;
+	}		
+	return n;
+}
+void delayms (int time0){
+	for(int q=0;q<time0*10000;q++); //por cada time 1ms
+}
+// envio de comandos 
+void send (int comando){  // comando de cursores linea y reset LCD 
+	RS=0;
+	E=0;
+	Puerto=comando;
+	E=1;
+	delayms(5);
+	E=0;
+	delayms(5);
+}
+void caracter(unsigned char cadena){ // se envian caracteres cualquiera
+	RS=1;
+	Puerto=cadena;
+	E=1;
+	delayms(20);
+	E=0;
+	delayms(20);
+}
+
+// Inicio de la clase 
+
+#ifndef LCD_h
+#define LCD_h
+class LCD{
+	private:		//declarar las variables usadas en la clase
+		
+	public: //declarar el/los metodos dde la clase
+		void run();
+		void clear();
+		void write(unsigned char *cadena);
+		void cursor(unsigned char x, unsigned char y);
+		void origen();
+		void writeint(int);
+};
+#endif
+
+void LCD::run(){
+	RCC->AHB1ENR |= (1ul<<2);//Habilita los clocks del puerto C
+	RCC->AHB1ENR |= (1ul<<4);//Habilita los clocks del puerto E
+	GPIOC->MODER |= 0x5555;//Asigna los pines C0 al C7 como salida
+	GPIOE->MODER |= 0x5;//Asigna los pines E0 y E1 como salida
+	delayms(20);
+// Comando de inicializacion del dato 
+	send(0x3C);
+	send(0x3C);
+	send(0x0C);
+	send(0X01);
+	send(0X06);
+	delayms(20);
+}
+//Borrar todo
+void LCD::clear(){
+	send(1);	
+}
+//
+void LCD::write(unsigned char *cadena){
+	unsigned char *inicio= cadena;
+	char i=0;
+// El for recorre caracter a caracter 
+	for (i=0;((inicio[i]!='\0')&&(i<20));i++){
+		RS=1;
+		Puerto=inicio[i];
+		E=1;
+		delayms(5);
+		E=0;
+		delayms(1);
+		RS=0;
+	}
+}
+//
+void LCD::cursor(unsigned char x, unsigned char y){
+     unsigned char comando=CursorLinea1;
+     switch(x)
+     {
+	case 1:         
+		comando=CursorLinea1+y-1;
+        break;
+
+        case 2:
+		comando=CursorLinea2+y-1;
+        break;
+
+        case 3:
+		comando=CursorLinea3+y-1;
+        break;
+        case 4:
+		comando=CursorLinea4+y-1;
+        break;
+        default:
+	break;
+     }
+		 send(comando);
+}
+// retornar el cursor al punto 0 
+
+void LCD::origen(){
+	send(0x2);
+}
+//
+void LCD::writeint(int numero){
+	int M, cm, dm, m, c, d, u;
+	char Millon, cmil, dmil, mil, cien, diez, uno;
+	u= (numero%10)		 /1;
+	d= (numero%100)	 /10;
+	c= (numero%1000)	 /100;
+	m= (numero%10000) /1000;
+	dm=(numero%100000)/10000;
+	cm=(numero%100000)/100000;
+	M= (numero%100000)/1000000;
+	Millon = tochar(M); // Se manda a la funcion inicial de conversion 
+	cmil = tochar(cm);
+	dmil = tochar(dm);
+	mil = tochar(m);
+	cien = tochar(c);
+	diez = tochar(d);
+	uno = tochar(u);
+	if(numero>999999){
+		caracter(Millon);
+	}
+	if(numero>99999){
+		caracter(cmil);
+	}
+	if(numero>99999){
+		caracter(dmil);
+	}
+	if(numero>999){
+		caracter(mil);
+	}
+	if(numero>99){
+		caracter(cien);
+	}
+	if(numero>9){
+		caracter(diez);
+	}
+	caracter(uno);
+	delayms(5);
+}
